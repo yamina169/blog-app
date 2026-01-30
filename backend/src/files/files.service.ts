@@ -6,21 +6,31 @@ import {
   GetObjectCommand,
 } from '@aws-sdk/client-s3';
 import { UploadFileDto } from './dto/upload-file.dto';
-import { Readable } from 'stream';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
+function getEnvVar(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing environment variable ${name}`);
+  }
+  return value;
+}
 
 @Injectable()
 export class FilesService {
   private s3 = new S3Client({
-    region: 'us-east-1',
-    endpoint: 'http://localhost:9000', // MinIO
+    region: getEnvVar('MINIO_REGION'),
+    endpoint: getEnvVar('MINIO_ENDPOINT'),
     credentials: {
-      accessKeyId: 'minioadmin',
-      secretAccessKey: 'minioadmin',
+      accessKeyId: getEnvVar('MINIO_ACCESS_KEY'),
+      secretAccessKey: getEnvVar('MINIO_SECRET_KEY'),
     },
     forcePathStyle: true, // required for MinIO
   });
 
-  private bucket = 'files'; // default bucket
+  private bucket = process.env.MINIO_BUCKET || 'files';
 
   async uploadFile(file: Express.Multer.File, dto: UploadFileDto) {
     const command = new PutObjectCommand({
@@ -44,20 +54,18 @@ export class FilesService {
   }
 
   async getFileAndMetadata(key: string) {
-    // Get metadata
     const headCommand = new HeadObjectCommand({
       Bucket: this.bucket,
       Key: key,
     });
     const metaResponse = await this.s3.send(headCommand);
 
-    // Get file
     const getCommand = new GetObjectCommand({ Bucket: this.bucket, Key: key });
     const fileResponse = await this.s3.send(getCommand);
 
     return {
       metadata: metaResponse.Metadata,
-      file: fileResponse.Body, // stream
+      file: fileResponse.Body,
       contentType: fileResponse.ContentType,
     };
   }
