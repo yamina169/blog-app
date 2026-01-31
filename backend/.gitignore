@@ -14,10 +14,10 @@ lerna-debug.log*
 
 
 # Ignore MinIO system files
-minio_data/**/.minio.sys
+minio_data/.minio.sys
 
 # Ignore all files in the articles bucket folder
-minio_data/articles/
+minio_data/articles
 
 
 # OS
