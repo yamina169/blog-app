@@ -2,16 +2,12 @@
 import { api } from "./api";
 
 const ArticleService = {
-  // Récupérer tous les articles avec filtres
-  getArticles: async (params) => {
+  // Récupérer tous les articles avec filtres, recherche et pagination
+  getArticles: async (params = {}) => {
+    // params peut contenir : limit, offset, tag, author, favorited, search
+    // limit et offset sont dynamiques et envoyés depuis le front
     const response = await api.get("/articles", { params });
     return response.data; // { articles, articlesCount }
-  },
-
-  // Récupérer le feed de l'utilisateur connecté
-  getFeed: async (params) => {
-    const response = await api.get("/articles/feed", { params });
-    return response.data;
   },
 
   // Récupérer un article par slug
@@ -20,47 +16,94 @@ const ArticleService = {
     return response.data.article;
   },
 
-  // Créer un nouvel article
-  createArticle: async (articleData) => {
-    const token = localStorage.getItem("token");
-    console.log("🪪 Token being sent:", token);
+  // Créer un nouvel article avec ou sans image
+  createArticle: async (articleData, file) => {
+    const formData = new FormData();
 
-    const response = await api.post("/articles", articleData);
+    formData.append("article[title]", articleData.title);
+    formData.append("article[description]", articleData.description);
+    formData.append("article[body]", articleData.body);
+
+    if (articleData.tagList && articleData.tagList.length > 0) {
+      articleData.tagList.forEach((tag) => {
+        formData.append("article[tagList][]", tag);
+      });
+    }
+
+    if (file) {
+      formData.append("image", file); // fichier image
+    }
+
+    const token = localStorage.getItem("token");
+
+    const response = await api.post("/articles", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     return response.data.article;
   },
 
   // Mettre à jour un article existant
   updateArticle: async (slug, data) => {
-    const response = await api.put(`/articles/${slug}`, { article: data });
+    const token = localStorage.getItem("token");
+
+    const response = await api.put(
+      `/articles/${slug}`,
+      { article: data },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
     return response.data.article;
   },
 
   // Supprimer un article
   deleteArticle: async (slug) => {
-    const response = await api.delete(`/articles/${slug}`);
+    const token = localStorage.getItem("token");
+
+    const response = await api.delete(`/articles/${slug}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     return response.data;
   },
 
   // Ajouter un article aux favoris
   addToFavorites: async (slug) => {
-    const response = await api.post(`/articles/${slug}/favorite`);
+    const token = localStorage.getItem("token");
+
+    const response = await api.post(
+      `/articles/${slug}/favorite`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
     return response.data.article;
   },
 
   // Retirer un article des favoris
   removeFromFavorites: async (slug) => {
-    const response = await api.delete(`/articles/${slug}/favorite`);
+    const token = localStorage.getItem("token");
+
+    const response = await api.delete(`/articles/${slug}/favorite`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     return response.data.article;
-  },
-
-  // --------------------
-  // GESTION DES TAGS
-  // --------------------
-
-  // Récupérer tous les tags existants
-  getAllTags: async () => {
-    const response = await api.get("/tags");
-    return response.data.tags; // array de string ['nestjs', 'react', ...]
   },
 };
 

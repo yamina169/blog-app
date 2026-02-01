@@ -1,36 +1,57 @@
-import React from "react";
-import "./App.css";
-import { Route, Routes } from "react-router-dom";
-import Blog from "./pages/Blog";
-import Login from "./components/Login";
-import Signup from "./components/Signup";
-import UserHome from "./components/user/UserHome";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import Landing from "./pages/LandingPage.jsx";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import store from "./app/store";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import persistStore from "redux-persist/es/persistStore";
+import Dashboard from "./pages/Dashboard";
+import PrivateRoute from "./components/PrivateRoute";
+import AdminPrivateRoute from "./components/AdminPrivateRoute";
+import CreateBlog from "./pages/CreateBlog";
+import UpdateBlog from "./pages/UpdateBlog";
+import ShowBlog from "./pages/ShowBlog";
+import ForgetPassword from "./pages/ForgetPassword";
 import Home from "./pages/Home";
-import AddPost from "./components/user/AddPost";
-import Feed from "./components/user/Feed";
-import ProfileInfo from "./components/user/profileinfo";
-import ShareArticle from "./components/user/ShareArticle"; // <-- import your new component
+
+import ScrollToTop from "./components/ScrollToTop";
+import Search from "./components/Search";
 
 const App = () => {
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/" exact element={<Feed />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/blog/:id" element={<Blog />} />
+    <>
+      <PersistGate persistor={persistStore(store)}>
+        <Provider store={store}>
+          <BrowserRouter>
+            <ScrollToTop />
+            <Header />
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/home" element={<Home />} />
 
-      {/* User Routes */}
-      <Route path="/user" element={<UserHome />}>
-        <Route path="dashboard" element={<Home />} />
-        <Route path="addpost" element={<AddPost />} />
-        <Route path="share-article" element={<ShareArticle />} />{" "}
-        {/* <-- new route */}
-        <Route path="home" element={<Home />} />
-        <Route path="user-profile" element={<ProfileInfo />} />
-      </Route>
-    </Routes>
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/blog/:blogSlug" element={<ShowBlog />} />
+              <Route path="/search" element={<Search />} />
+              <Route path="/forget-password" element={<ForgetPassword />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/create-blog" element={<CreateBlog />} />
+              <Route path="/update-blog/:blogId" element={<UpdateBlog />} />
+              <Route path="/update-blog/:blogId" element={<UpdateBlog />} />
+              <Route element={<AdminPrivateRoute />}></Route>
+            </Routes>
+            <Footer />
+          </BrowserRouter>
+        </Provider>
+      </PersistGate>
+    </>
   );
 };
-
 export default App;
