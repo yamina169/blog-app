@@ -1,4 +1,4 @@
-#Tech TN Blog
+#  Tech TN Blog
 
 **Tech TN Blog** is a full-stack application for publishing and managing articles with images, favorites, and comments, and for dynamically displaying the latest news.
 
@@ -117,4 +117,13 @@ To run the **entire project with Docker**, use Docker Compose:
 docker-compose up --build
 ```
 
-* Backend:
+* Backend: `http://localhost:3000/api` (Swagger UI available)
+* Frontend: `http://localhost:5173`
+
+---
+
+## ⚡ Notes on Images
+
+* Images are **only for articles**
+* Stored in **MinIO**, retrievable via the API
+* Max file size: 5 MB, allowed types: `jpg`, `jpeg`, `png`, `gif`
