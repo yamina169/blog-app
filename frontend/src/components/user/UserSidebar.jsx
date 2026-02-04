@@ -12,11 +12,6 @@ const UserSidebar = () => {
       path: "/create-blog",
       icon: <FaPlusCircle className="text-lg" />,
     },
-    {
-      name: "History",
-      path: "/history",
-      icon: <FaHistory className="text-lg" />,
-    },
   ];
 
   const linkClass = (path) =>

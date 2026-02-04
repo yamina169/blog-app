@@ -1,13 +1,9 @@
 import { api } from "./api";
 
 const ArticleService = {
-  // =====================
-  // ARTICLES
-  // =====================
-
   getArticles: async (params = {}) => {
     const response = await api.get("/articles", { params });
-    return response.data; // { articles, articlesCount }
+    return response.data;
   },
 
   getArticle: async (slug) => {
@@ -91,20 +87,17 @@ const ArticleService = {
   // COMMENTAIRES
   // =====================
 
-  // src/services/article.service.js
   getComments: async (slug, params = {}) => {
     try {
-      // params peut contenir { limit, offset }
       const response = await api.get(`/articles/${slug}/comments`, { params });
 
-      // S'assurer que la réponse a les bons champs
       const comments = response.data.comments || [];
       const total = response.data.total ?? comments.length;
 
       return { comments, total };
     } catch (err) {
       console.error("Error fetching comments:", err);
-      return { comments: [], total: 0 }; // fallback pour éviter les erreurs
+      return { comments: [], total: 0 };
     }
   },
 
@@ -127,7 +120,7 @@ const ArticleService = {
     const response = await api.delete(
       `/articles/${slug}/comments/${commentId}`,
       {
-        headers: { Authorization: `Bearer ${token}` }, // ✅ corrigé
+        headers: { Authorization: `Bearer ${token}` },
       }
     );
 

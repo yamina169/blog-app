@@ -122,7 +122,7 @@ const CreateBlog = () => {
 
       {/* Form content */}
       <div className="flex-1 flex flex-col items-center p-6">
-        <h1 className="text-4xl font-bold text-indigo-600 mb-8">
+        <h1 className="text-3xl font-bold text-indigo-600 mb-8">
           Create a New Blog
         </h1>
 
@@ -149,26 +149,42 @@ const CreateBlog = () => {
           </div>
 
           {/* Image Upload */}
-          <div className="flex items-center justify-center border-2 border-dashed border-indigo-300 rounded-lg p-4 cursor-pointer hover:border-indigo-500 transition">
-            <input
-              ref={imageInputRef}
-              type="file"
-              accept="image/*"
-              onChange={blogImgChangeHandle}
-              className="w-full cursor-pointer"
-            />
+          <div className="flex flex-col items-center mt-4">
+            {!imagePreview ? (
+              <label className="w-full md:w-3/4 lg:w-1/2 flex flex-col items-center justify-center border-2 border-dashed border-indigo-300 rounded-lg p-8 cursor-pointer hover:border-indigo-500 transition">
+                <span className="text-gray-500 mb-2">
+                  Click to upload image
+                </span>
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={blogImgChangeHandle}
+                  className="hidden"
+                />
+                <span className="text-indigo-600 font-semibold">Upload</span>
+              </label>
+            ) : (
+              <div className="relative w-full md:w-3/4 lg:w-1/2">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="rounded-xl w-full shadow-lg object-cover "
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBlogImage(null);
+                    setImagePreview(null);
+                    if (imageInputRef.current) imageInputRef.current.value = "";
+                  }}
+                  className="absolute top-2 right-2 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow hover:bg-red-600 transition"
+                >
+                  &times;
+                </button>
+              </div>
+            )}
           </div>
-
-          {/* Image Preview */}
-          {imagePreview && (
-            <div className="w-full flex justify-center mt-4">
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="rounded-xl w-full md:w-3/4 lg:w-1/2 shadow-lg object-cover h-96"
-              />
-            </div>
-          )}
 
           {/* Body Editor */}
           <div className="mt-4">

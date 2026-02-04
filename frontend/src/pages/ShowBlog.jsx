@@ -195,51 +195,102 @@ const ShowBlog = () => {
       </div>
 
       <div className="flex-1 flex flex-col gap-6 px-4 md:px-6 lg:px-8">
-        {/* Auteur autorisé à modifier */}
+        {/* Edit/Delete buttons */}
         {isAuthor && !editMode && (
-          <div className="flex justify-end gap-4">
+          <div className="flex justify-end gap-3 mb-2">
             <button
               onClick={() => setEditMode(true)}
-              className="flex items-center gap-1 text-indigo-600 hover:underline"
+              className="flex items-center gap-1 text-indigo-600 px-3 py-1 border border-indigo-600 rounded-lg hover:bg-indigo-50 transition"
             >
               <FaEdit /> Edit
             </button>
             <button
               onClick={handleDeleteArticle}
-              className="flex items-center gap-1 text-red-600 hover:underline"
+              className="flex items-center gap-1 text-red-600 px-3 py-1 border border-red-600 rounded-lg hover:bg-red-50 transition"
             >
               <FaTrash /> Delete
             </button>
           </div>
         )}
 
-        {/* Titre */}
-        {editMode ? (
-          <input
-            type="text"
-            name="title"
-            value={editData.title}
-            onChange={handleEditChange}
-            className="w-full text-2xl sm:text-3xl md:text-4xl font-extrabold border-b-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 px-2 py-1 mb-2"
-          />
-        ) : (
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center mb-2 text-gray-900 drop-shadow-sm">
-            {article.title}
-          </h1>
-        )}
+        {/* Title, Description, Author, Date, Comments, Favorites */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
+          <div className="flex-1">
+            {editMode ? (
+              <input
+                type="text"
+                name="title"
+                value={editData.title}
+                onChange={handleEditChange}
+                className="w-full text-2xl sm:text-3xl md:text-4xl font-extrabold border-b-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 px-2 py-1 mb-1"
+              />
+            ) : (
+              <h1 className="text-2xl sm:text-3xl md:text-4xl mb-5 font-extrabold text-gray-900 drop-shadow-sm">
+                {article.title}
+              </h1>
+            )}
+            {editMode ? (
+              <textarea
+                name="description"
+                value={editData.description}
+                onChange={handleEditChange}
+                className="w-full border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              />
+            ) : (
+              <p className="text-gray-700 mt-1">{article.description}</p>
+            )}
+          </div>
 
-        {/* Description */}
-        {editMode ? (
-          <textarea
-            name="description"
-            value={editData.description}
-            onChange={handleEditChange}
-            className="w-full border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 px-2 py-1 mb-2"
-          />
-        ) : (
-          <p className="text-gray-700 mb-4 text-center max-w-3xl mx-auto">
-            {article.description}
-          </p>
+          {/* Meta data */}
+          {!editMode && (
+            <div className="flex flex-wrap items-center gap-4 text-gray-600 text-sm">
+              {article.author && (
+                <span>
+                  By{" "}
+                  <span className="font-semibold">
+                    {article.author.username}
+                  </span>
+                </span>
+              )}
+              <span className="flex items-center gap-1">
+                <FaCalendarAlt />{" "}
+                {new Date(article.createdAt).toLocaleDateString()}
+              </span>
+              <span className="flex items-center gap-1">
+                <FaCommentAlt /> {commentsCount}
+              </span>
+              <span
+                className="flex items-center gap-1 cursor-pointer hover:scale-110 transition transform"
+                onClick={handleToggleFavorite}
+              >
+                {isFavorited ? (
+                  <FaHeart className="text-red-500 hover:text-red-600" />
+                ) : (
+                  <FaRegHeart className="hover:text-red-500" />
+                )}
+                {favoritesCount}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Image */}
+        {article.image && article.image.trim() !== "" && (
+          <div className="flex justify-center mb-6 w-full">
+            <div className="w-full sm:w-72 md:w-80 lg:w-96 h-64 overflow-hidden rounded-xl shadow-lg flex items-center justify-center bg-gray-100">
+              <img
+                src={
+                  article.image.startsWith("http")
+                    ? article.image
+                    : `/${article.image}`
+                }
+                alt={article.title}
+                className="w-full h-full object-cover"
+                loading="lazy"
+                onError={(e) => (e.currentTarget.style.display = "none")}
+              />
+            </div>
+          </div>
         )}
 
         {/* Body */}
@@ -259,7 +310,34 @@ const ShowBlog = () => {
             }}
           />
         )}
+        {/* Tags */}
+        {!editMode && article.tagList?.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-2 mb-4">
+            {article.tagList.map((tag, idx) => {
+              const colors = [
+                "bg-blue-100 text-blue-800",
+                "bg-green-100 text-green-800",
+                "bg-yellow-100 text-yellow-800",
+                "bg-pink-100 text-pink-800",
+                "bg-purple-100 text-purple-800",
+                "bg-indigo-100 text-indigo-800",
+                "bg-red-100 text-red-800",
+                "bg-teal-100 text-teal-800",
+              ];
+              const colorClass = colors[idx % colors.length];
+              return (
+                <span
+                  key={idx}
+                  className={`inline-block px-3 py-1 text-sm font-medium rounded-full border shadow-sm hover:scale-105 transition transform ${colorClass}`}
+                >
+                  {tag}
+                </span>
+              );
+            })}
+          </div>
+        )}
 
+        {/* Edit Mode Buttons */}
         {editMode && (
           <div className="flex gap-4 justify-center mb-6">
             <button
@@ -277,86 +355,11 @@ const ShowBlog = () => {
           </div>
         )}
 
-        {/* Infos, tags, image, favorite, comments */}
+        {/* Commentaires */}
         {!editMode && (
-          <>
-            {article.author && (
-              <p className="text-gray-500 mb-2 text-center">
-                By{" "}
-                <span className="font-semibold">{article.author.username}</span>
-              </p>
-            )}
-            <div className="flex flex-wrap justify-center items-center gap-6 text-gray-600 mb-4">
-              <div className="flex items-center gap-1">
-                <FaCalendarAlt />
-                <span>{new Date(article.createdAt).toLocaleDateString()}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <FaCommentAlt />
-                <span>{commentsCount}</span>
-              </div>
-              <div
-                className="flex items-center gap-1 cursor-pointer hover:scale-110 transition transform"
-                onClick={handleToggleFavorite}
-              >
-                {isFavorited ? (
-                  <FaHeart className="text-red-500 hover:text-red-600" />
-                ) : (
-                  <FaRegHeart className="hover:text-red-500" />
-                )}
-                <span className="font-medium">{favoritesCount}</span>
-              </div>
-            </div>
-
-            {/* Tags */}
-            <div className="flex flex-wrap gap-2 justify-center mb-4">
-              {article.tagList?.map((tag, idx) => {
-                const colors = [
-                  "bg-blue-100 text-blue-800",
-                  "bg-green-100 text-green-800",
-                  "bg-yellow-100 text-yellow-800",
-                  "bg-pink-100 text-pink-800",
-                  "bg-purple-100 text-purple-800",
-                  "bg-indigo-100 text-indigo-800",
-                  "bg-red-100 text-red-800",
-                  "bg-teal-100 text-teal-800",
-                ];
-                const colorClass = colors[idx % colors.length];
-                return (
-                  <span
-                    key={idx}
-                    className={`inline-block px-3 py-1 text-sm font-medium rounded-full border shadow-sm hover:scale-105 transition transform ${colorClass}`}
-                  >
-                    {tag}
-                  </span>
-                );
-              })}
-            </div>
-
-            {/* Image */}
-            {article.image && article.image.trim() !== "" && (
-              <div className="flex justify-center mb-6 w-full">
-                <div className="w-full sm:w-72 md:w-80 lg:w-96 overflow-hidden rounded-xl shadow-lg flex items-center justify-center bg-gray-100">
-                  <img
-                    src={
-                      article.image.startsWith("http")
-                        ? article.image
-                        : `/${article.image}`
-                    }
-                    alt={article.title}
-                    className="w-full h-auto object-contain"
-                    loading="lazy"
-                    onError={(e) => (e.currentTarget.style.display = "none")}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Commentaires */}
-            <div className="w-full max-w-4xl mx-auto">
-              <CommentCard slug={slug} comments={comments} />
-            </div>
-          </>
+          <div className="w-full max-w-4xl mx-auto">
+            <CommentCard slug={slug} comments={comments} />
+          </div>
         )}
       </div>
     </div>

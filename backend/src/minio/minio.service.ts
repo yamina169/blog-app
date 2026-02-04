@@ -76,7 +76,6 @@ export class MinioService {
     );
   }
 
-  // Génère un presigned URL pour accéder au fichier
   async getPresignedUrl(
     objectName: string,
     bucketName?: string,
@@ -87,7 +86,6 @@ export class MinioService {
     return this.client.presignedUrl('GET', bucket, objectName, expires);
   }
 
-  // Supprime un objet du bucket
   async deleteObject(bucketName: string, objectName: string): Promise<void> {
     const bucket = bucketName || this.defaultBucket;
     await this.ensureBucketExists(bucket);

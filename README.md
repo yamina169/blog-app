@@ -1,69 +1,40 @@
-# Social App
+# Blog API
 
-Welcome to the **Social App**, a **full-stack application** built with **React** for the frontend and **NestJS** for the backend, with **MinIO** for file storage.
-
-This app enables:
-
-- User registration and authentication
-- Profile management
-- Article publishing and management
-- Tag interaction
-- Social features like following users and favoriting articles
-- File uploads with metadata (title, uploadedBy) stored in **MinIO**
+Welcome to the **Blog API**, a RESTful service built with NestJS and fully documented using Swagger. This API enables user registration, authentication, profile management, article publishing, tag interaction, and social features like following and favoriting.
 
 ---
 
 ## 🚀 Features
 
 - User registration and login
-- Article CRUD (Create, Read, Update, Delete)
+- Article CRUD (Create, Update, Delete)
 - Tag retrieval
-- Follow/unfollow users and retrieve profiles
+- Follow/unfollownand get user profile
 - Favorite/unfavorite articles
 - Feed of articles from followed users
-- File upload with metadata to **MinIO**
 
 ---
 
 ## 🔐 Authorization
 
-Protected endpoints require a **valid JWT token** in the `Authorization` header:
-
-```
-Authorization: Bearer <your-jwt-token>
-```
+Protected endpoints require a valid JWT token in the `Authorization` header:
 
 ---
 
 ## ⚙️ Environment Variables
 
-Create a `.env` file in the backend root directory:
+Create a `.env` file in the root directory with these variables:
 
 ```env
-# App variables
-PORT=3000
-JWT_SECRET=your_jwt_secret_key
-JWT_EXPIRES_IN=3600s
+JWT_SECRET=your_jwt_secret_key_here
 
-# PostgreSQL (local development)
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_NAME=blog
-
-# MinIO (local S3 storage)
-MINIO_ENDPOINT=http://localhost:9000
-MINIO_ACCESS_KEY=minioadmin
-MINIO_SECRET_KEY=minioadmin
-MINIO_BUCKET=files
 ```
 
-> **Note:** Adjust database and MinIO variables to match your local setup.
+> **Note:** Adjust database variables to match your setup.
 
 ---
 
-## 📖 Backend Documentation
+## 📖 Documentation
 
 Swagger UI is available at:
 
@@ -71,72 +42,40 @@ Swagger UI is available at:
 http://localhost:3000/api
 ```
 
-Use it to explore backend endpoints, try requests, and inspect response schemas interactively.
+Use it to explore endpoints, try requests, and inspect response schemas interactively.
 
 ---
 
 ## 🏁 Getting Started
 
-### Backend
+1. **Clone repository**
 
-1. **Clone the repository**
-
-```bash
-git clone <repository-url>
-cd <repository-folder>/backend
-```
+   ```bash
+   git clone <repository-url>
+   cd <repository-folder>
+   ```
 
 2. **Install dependencies**
 
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
 3. **Configure environment**
 
-- Create a `.env` file as shown above
-- Ensure PostgreSQL is running locally
-- Ensure MinIO is running for file uploads:
+   - Create your `.env` as shown above
 
-```bash
-docker-compose up -d minio
-```
+4. **Launch the server**
 
-4. **Start the server**
+   ```bash
+   npm run start:dev
+   ```
 
-```bash
-npm run start:dev
-```
+5. **Open Swagger UI**
+   Navigate to:
 
----
-
-### Frontend
-
-1. **Navigate to frontend folder**
-
-```bash
-cd ../frontend
-```
-
-2. **Install dependencies**
-
-```bash
-npm install
-```
-
-3. **Start the frontend**
-
-```bash
-npm start
-```
-
-The React app will open in your browser (default `http://localhost:3000`) and communicate with the backend API.
+   ```
+   http://localhost:3000/api
+   ```
 
 ---
-
-## ⚡ Notes on File Uploads
-
-- Supports **title** and **uploadedBy** metadata
-- Max file size: **5 MB**
-- Allowed types: images (`jpg`, `jpeg`, `png`, `gif`)
-- Files are stored in **MinIO**; metadata can be retrieved via API

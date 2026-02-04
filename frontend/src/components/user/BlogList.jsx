@@ -5,12 +5,22 @@ const TAG_COLORS = [
   "bg-blue-200 text-blue-800",
   "bg-green-200 text-green-800",
   "bg-orange-200 text-orange-800",
+  "bg-red-200 text-red-800",
+  "bg-purple-200 text-purple-800",
+  "bg-yellow-200 text-yellow-800",
+  "bg-pink-200 text-pink-800",
+  "bg-teal-200 text-teal-800",
 ];
 
-const BlogList = ({ articles, onToggleFavorite }) => {
-  const getTagColor = (index) => TAG_COLORS[index % TAG_COLORS.length];
+let globalTagCounter = 0; // compteur global pour les couleurs
 
-  // Formater date + heure "1 Feb 2026, 14:35"
+const BlogList = ({ articles, onToggleFavorite }) => {
+  const getNextTagColor = () => {
+    const color = TAG_COLORS[globalTagCounter % TAG_COLORS.length];
+    globalTagCounter += 1;
+    return color;
+  };
+
   const formatDateTime = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -35,7 +45,6 @@ const BlogList = ({ articles, onToggleFavorite }) => {
             ? `Updated: ${updated}`
             : `Created: ${created}`;
 
-        // Vérifier si l'image est valide
         const hasImage = blog.image && blog.image.trim() !== "";
 
         return (
@@ -43,22 +52,19 @@ const BlogList = ({ articles, onToggleFavorite }) => {
             to={`/blog/${blog.slug}`}
             key={blog.id}
             className="relative flex flex-col md:flex-row-reverse bg-white rounded-xl shadow-md overflow-hidden transition-transform hover:scale-105 md:h-48"
-            // md:h-48 : hauteur fixe sur desktop pour que l'image ait une référence
           >
-            {/* Image à droite uniquement si valide */}
             {hasImage && (
-              <div className="md:w-1/4 h-full flex-shrink-0">
+              <div className="md:w-1/4 h-full flex-shrink-0 overflow-hidden rounded-r-xl">
                 <img
                   src={blog.image}
                   alt={blog.title}
-                  className="w-full h-full object-cover rounded-r-xl"
+                  className="w-full h-full object-contain"
                   loading="lazy"
                   onError={(e) => e.currentTarget.parentElement.remove()}
                 />
               </div>
             )}
 
-            {/* Contenu */}
             <div
               className={`p-6 flex flex-col justify-between ${
                 hasImage ? "md:w-3/4" : "w-full"
@@ -83,9 +89,7 @@ const BlogList = ({ articles, onToggleFavorite }) => {
                   {blog.tagList?.map((tag, index) => (
                     <span
                       key={index}
-                      className={`inline-block px-3 py-1 text-xs rounded-full border ${getTagColor(
-                        index
-                      )}`}
+                      className={`inline-block px-3 py-1 text-xs rounded-full border ${getNextTagColor()}`}
                     >
                       {tag}
                     </span>
@@ -94,7 +98,6 @@ const BlogList = ({ articles, onToggleFavorite }) => {
               </div>
             </div>
 
-            {/* Heart */}
             <div
               onClick={(e) => onToggleFavorite(e, blog)}
               className="absolute top-4 right-4 bg-white/90 backdrop-blur px-2 py-1 rounded-full flex items-center gap-1 shadow cursor-pointer"
